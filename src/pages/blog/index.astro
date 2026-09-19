@@ -1,11 +1,11 @@
 ---
-import { Image } from 'astro:assets';
-import { getPublishedPosts, readingTime } from '../../lib/posts';
 import BaseHead from '../../components/BaseHead.astro';
+import CategoryNav from '../../components/CategoryNav.astro';
 import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
+import PostList from '../../components/PostList.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { getPublishedPosts } from '../../lib/posts';
 
 const posts = await getPublishedPosts();
 ---
@@ -13,7 +13,7 @@ const posts = await getPublishedPosts();
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`Articles | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
 			main {
 				width: 1000px;
@@ -22,99 +22,14 @@ const posts = await getPublishedPosts();
 				margin: 0 0 1.5rem 0;
 				font-size: 2.2rem;
 			}
-			ul {
-				display: grid;
-				grid-template-columns: repeat(2, 1fr);
-				gap: 1.5rem;
-				list-style: none;
-				margin: 0;
-				padding: 0;
-			}
-			li:first-child {
-				grid-column: 1 / -1;
-			}
-			.card {
-				display: block;
-				height: 100%;
-				background: var(--surface);
-				border: 1px solid var(--line);
-				border-radius: 8px;
-				overflow: hidden;
-				color: var(--text);
-				text-decoration: none;
-				transition: border-color 0.2s ease;
-			}
-			.card:hover,
-			.card:focus-visible {
-				border-color: var(--brand-yellow);
-			}
-			.card img {
-				display: block;
-				width: 100%;
-				aspect-ratio: 2 / 1;
-				object-fit: cover;
-				border-radius: 0;
-			}
-			.card-body {
-				padding: 1.25rem 1.5rem 1.5rem;
-			}
-			.date {
-				margin: 0 0 0.5rem 0;
-				font-size: 0.75rem;
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
-				color: rgb(var(--muted-rgb));
-			}
-			.title {
-				margin: 0 0 0.5rem 0;
-				font-size: 1.4rem;
-				line-height: 1.25;
-			}
-			li:first-child .title {
-				font-size: 2.1rem;
-			}
-			.description {
-				margin: 0;
-				font-size: 0.9rem;
-				line-height: 1.6;
-				color: rgb(var(--muted-rgb));
-			}
-			@media (max-width: 720px) {
-				ul {
-					grid-template-columns: 1fr;
-				}
-				li:first-child .title {
-					font-size: 1.6rem;
-				}
-			}
 		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
 			<h1 class="page-title">Latest articles</h1>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a class="card" href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={960} height={480} src={post.data.heroImage} alt="" to alt={post.data.heroImageAlt} />
-									)}
-									<div class="card-body">
-<p class="date">
-	{post.data.category} · <FormattedDate date={post.data.pubDate} /> · {readingTime(post.body)} min read
-</p>
-										<h2 class="title">{post.data.title}</h2>
-										<p class="description">{post.data.description}</p>
-									</div>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
+			<CategoryNav />
+			<PostList posts={posts} />
 		</main>
 		<Footer />
 	</body>

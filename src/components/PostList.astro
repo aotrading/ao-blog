@@ -1,0 +1,117 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { readingTime } from '../lib/posts';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	posts: CollectionEntry<'blog'>[];
+}
+
+const { posts } = Astro.props;
+---
+
+{
+	posts.length === 0 ? (
+		<p class="empty">No articles yet. Check back soon.</p>
+	) : (
+		<section>
+			<ul>
+				{posts.map((post) => (
+					<li>
+						<a class="card" href={`/blog/${post.id}/`}>
+							{post.data.heroImage && (
+								<Image
+									width={960}
+									height={480}
+									src={post.data.heroImage}
+									alt={post.data.heroImageAlt}
+								/>
+							)}
+							<div class="card-body">
+								<p class="date">
+									{post.data.category} · <FormattedDate date={post.data.pubDate} /> ·{' '}
+									{readingTime(post.body)} min read
+								</p>
+								<h2 class="title">{post.data.title}</h2>
+								<p class="description">{post.data.description}</p>
+							</div>
+						</a>
+					</li>
+				))}
+			</ul>
+		</section>
+	)
+}
+
+<style>
+	.empty {
+		padding: 2rem 0;
+		color: rgb(var(--muted-rgb));
+	}
+	ul {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	li:first-child {
+		grid-column: 1 / -1;
+	}
+	.card {
+		display: block;
+		height: 100%;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		overflow: hidden;
+		color: var(--text);
+		text-decoration: none;
+		transition: border-color 0.2s ease;
+	}
+	.card:hover,
+	.card:focus-visible {
+		border-color: var(--brand-yellow);
+	}
+	.card img {
+		display: block;
+		width: 100%;
+		aspect-ratio: 2 / 1;
+		object-fit: cover;
+		border-radius: 0;
+	}
+	.card-body {
+		padding: 1.25rem 1.5rem 1.5rem;
+	}
+	.date {
+		margin: 0 0 0.5rem 0;
+		font-size: 0.75rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: rgb(var(--muted-rgb));
+	}
+	.title {
+		margin: 0 0 0.5rem 0;
+		font-size: 1.4rem;
+		line-height: 1.25;
+	}
+	li:first-child .title {
+		font-size: 2.1rem;
+	}
+	.description {
+		margin: 0;
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: rgb(var(--muted-rgb));
+	}
+	@media (max-width: 720px) {
+		ul {
+			grid-template-columns: 1fr;
+		}
+		li:first-child .title {
+			font-size: 1.6rem;
+		}
+	}
+</style>
