@@ -14,6 +14,14 @@ const blog = defineCollection({
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.optional(image()),
+			// Describes the hero image for screen readers and search engines
+			heroImageAlt: z.string().default(''),
+			// Topics for browsing, e.g. ['risk management', 'forex']
+			tags: z.array(z.string()).default([]),
+			// Drafts are hidden from the live site (wired up in Step 4.2)
+			draft: z.boolean().default(false),
+						// Fixed set of categories; a typo here fails the build
+			category: z.enum(['Education', 'Market Analysis']).default('Education'),
 		}),
 });
 

@@ -6,9 +6,22 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type BlogData = CollectionEntry<'blog'>['data'];
+type Props = Pick<BlogData, 'title' | 'description' | 'pubDate'> &
+	Partial<Pick<BlogData, 'updatedDate' | 'heroImage' | 'heroImageAlt' | 'category'>> & {
+		readingMinutes?: number;
+	};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	heroImageAlt,
+	category,
+	readingMinutes,
+} = Astro.props;
 ---
 
 <html lang="en">
@@ -19,6 +32,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				width: calc(100% - 2em);
 				max-width: 100%;
 				margin: 0;
+				padding: 2em 1em 3em;
 			}
 			.hero-image {
 				width: 100%;
@@ -26,7 +40,8 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			.hero-image img {
 				display: block;
 				margin: 0 auto;
-				border-radius: 12px;
+				border: 1px solid var(--line);
+				border-radius: 8px;
 				box-shadow: var(--box-shadow);
 			}
 			.prose {
@@ -34,23 +49,67 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				max-width: calc(100% - 2em);
 				margin: auto;
 				padding: 1em;
-				color: rgb(var(--gray-dark));
+				color: var(--text);
 			}
 			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
+				margin-bottom: 1.5em;
+				padding: 1em 0 0;
 			}
 			.title h1 {
-				margin: 0 0 0.5em 0;
+				margin: 0 0 0.6em 0;
+				font-size: clamp(2rem, 5vw, 2.8rem);
+				line-height: 1.15;
 			}
 			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
+				margin-bottom: 0.75em;
+				font-size: 0.75rem;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: rgb(var(--muted-rgb));
 			}
+			.category {
+	margin: 0 0 0.5em 0;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--link);
+}
 			.last-updated-on {
+				margin-top: 0.25em;
 				font-style: italic;
+				text-transform: none;
+				letter-spacing: 0;
+			}
+			.rule {
+				width: 56px;
+				height: 3px;
+				background: var(--brand-yellow);
+			}
+
+			/* Styles for Markdown content need :global(), because the
+			   elements are generated outside this component. */
+			.prose :global(pre) {
+				border: 1px solid var(--line);
+				overflow-x: auto;
+			}
+			.prose :global(table) {
+				display: block;
+				overflow-x: auto;
+				border-collapse: collapse;
+				font-size: 0.9em;
+			}
+			.prose :global(th),
+			.prose :global(td) {
+				padding: 0.5em 0.75em;
+				border: 1px solid var(--line);
+				text-align: left;
+			}
+			.prose :global(th) {
+				background: var(--surface);
+			}
+			.prose :global(blockquote) {
+				color: rgb(var(--muted-rgb));
 			}
 		</style>
 	</head>
@@ -60,23 +119,25 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<main>
 			<article>
 				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+					{heroImage && <Image width={1020} height={510} src={heroImage} alt={heroImageAlt ?? ''} />}
 				</div>
 				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
+<div class="title">
+	{category && <p class="category">{category}</p>}
+	<div class="date">
+		<FormattedDate date={pubDate} />
+		{readingMinutes && <span> · {readingMinutes} min read</span>}
+		{
+			updatedDate && (
+				<div class="last-updated-on">
+					Last updated on <FormattedDate date={updatedDate} />
+				</div>
+			)
+		}
+	</div>
+	<h1>{title}</h1>
+	<div class="rule"></div>
+</div>
 					<slot />
 				</div>
 			</article>
