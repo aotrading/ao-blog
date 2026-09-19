@@ -9,7 +9,6 @@ draft: false
 featured: false
 ---
 
-# Why Your Stop Loss Doesn't Always Protect You
 
 A stop loss can define the loss you intend to take.
 

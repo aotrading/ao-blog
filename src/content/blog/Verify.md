@@ -9,7 +9,6 @@ draft: false
 featured: true
 ---
 
-# How to Verify a Forex Signal Provider's Track Record Before You Pay
 
 A win rate tells you what happened inside a provider's chosen sample.
 

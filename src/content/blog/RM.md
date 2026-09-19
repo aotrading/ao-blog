@@ -9,7 +9,6 @@ draft: false
 featured: true
 ---
 
-# Risk Management in Trading
 
 Risk management determines how much a trade can affect your account.
 

@@ -9,7 +9,6 @@ draft: false
 featured: true
 ---
 
-# What Are Crypto Trading Signals? A Complete Guide
 
 A crypto trading signal is a defined trade plan: what to trade, where to enter, where to exit if the trade moves against the setup, and where to take profit.
 
