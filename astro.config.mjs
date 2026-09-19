@@ -26,13 +26,13 @@ export default defineConfig({
 			options: {
 				variants: [
 					{
-						src: ['./src/assets/fonts/crucial-medium.woff2'],
+						src: ['./src/assets/fonts/Crucial-Medium.woff2'],
 						weight: 500,
 						style: 'normal',
 						display: 'swap',
 					},
 					{
-						src: ['./src/assets/fonts/crucial-mediumitalic.woff2'],
+						src: ['./src/assets/fonts/Crucial-MediumItalic.woff2'],
 						weight: 500,
 						style: 'italic',
 						display: 'swap',
