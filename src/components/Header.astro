@@ -7,11 +7,10 @@ import logoOnLight from '../assets/logo-on-light.svg';
 
 <header>
 	<nav aria-label="Main">
-		<a class="brand" href="/">
-			<img class="logo logo-on-dark" src={logoOnDark.src} alt="" />
-			<img class="logo logo-on-light" src={logoOnLight.src} alt="" />
-			<span class="brand-name">{SITE_TITLE}</span>
-		</a>
+<a class="brand" href="/" aria-label={SITE_TITLE}>
+	<img class="logo logo-on-dark" src={logoOnDark.src} alt="" />
+	<img class="logo logo-on-light" src={logoOnLight.src} alt="" />
+</a>
 
 		<div class="nav-right">
 			<div class="internal-links">
