@@ -1,0 +1,75 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Page not found | ${SITE_TITLE}`}
+			description="The page you were looking for could not be found."
+		/>
+		<meta name="robots" content="noindex" />
+		<style>
+			main {
+				text-align: center;
+				padding: 5em 1em;
+			}
+			.status {
+				margin: 0;
+				font-family: var(--font-crucial);
+				font-size: clamp(4rem, 15vw, 8rem);
+				line-height: 1;
+				color: var(--brand-yellow);
+			}
+			h1 {
+				margin: 0.25em 0 0.5em 0;
+				font-size: 2rem;
+			}
+			p {
+				margin: 0 0 2em 0;
+				color: rgb(var(--muted-rgb));
+			}
+			.actions {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 0.75rem;
+			}
+			.actions a {
+				padding: 0.6rem 1.4rem;
+				border: 1px solid var(--line);
+				border-radius: 999px;
+				font-size: 0.9rem;
+				color: var(--text);
+				text-decoration: none;
+			}
+			.actions a:hover,
+			.actions a:focus-visible {
+				border-color: var(--brand-yellow);
+			}
+			.actions a.primary {
+				background: var(--brand-yellow);
+				border-color: var(--brand-yellow);
+				color: #111111;
+				font-weight: 700;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<p class="status" aria-hidden="true">404</p>
+			<h1>Page not found</h1>
+			<p>The page you're looking for doesn't exist, or it has moved.</p>
+			<div class="actions">
+				<a class="primary" href="/blog/">Browse articles</a>
+				<a href="/">Go to the home page</a>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
