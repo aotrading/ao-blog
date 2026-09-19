@@ -1,0 +1,55 @@
+---
+import { categories } from '../lib/categories';
+---
+
+<ul class="category-cards">
+	{categories.map((cat) => (
+		<li>
+			<a class="card" href={`/blog/category/${cat.slug}/`}>
+				<h3 class="name">{cat.name}</h3>
+				<p class="description">{cat.description}</p>
+			</a>
+		</li>
+	))}
+</ul>
+
+<style>
+	.category-cards {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.card {
+		display: block;
+		height: 100%;
+		padding: 1.5rem;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		color: var(--text);
+		text-decoration: none;
+		transition: border-color 0.2s ease;
+	}
+	.card:hover,
+	.card:focus-visible {
+		border-color: var(--brand-yellow);
+	}
+	.name {
+		margin: 0 0 0.5rem 0;
+		font-size: 1.3rem;
+	}
+	.description {
+		margin: 0;
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: rgb(var(--muted-rgb));
+	}
+	@media (max-width: 720px) {
+		.category-cards {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
