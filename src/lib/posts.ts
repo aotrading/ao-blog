@@ -1,5 +1,11 @@
 import { getCollection } from 'astro:content';
 
+// Canonical URL for a post. A post's public URL is derived from its filename
+// (its collection id), so this is the single place that format is defined.
+export function postUrl(postId: string): string {
+	return `/blog/${postId}/`;
+}
+
 // Single source of truth for "which posts are visible".
 // In production builds, drafts are excluded. In `npm run dev`, they are
 // shown so you can preview them.

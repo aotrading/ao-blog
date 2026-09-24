@@ -1,0 +1,104 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Risk Disclaimer | ${SITE_TITLE}`}
+			description="The information on this website is educational and informational only. It is not financial, investment, or trading advice, and trading involves substantial risk of loss."
+		/>
+		<style>
+			main {
+				width: calc(100% - 2em);
+				max-width: 100%;
+				margin: 0;
+				padding: 2em 1em 3em;
+			}
+			.prose {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 1em;
+				color: var(--text);
+			}
+			.title {
+				margin-bottom: 1.5em;
+				padding: 1em 0 0;
+			}
+			.title h1 {
+				margin: 0 0 0.6em 0;
+				font-size: clamp(2rem, 5vw, 2.8rem);
+				line-height: 1.15;
+			}
+			.rule {
+				width: 56px;
+				height: 3px;
+				margin-bottom: 1.5em;
+				background: var(--brand-yellow);
+			}
+			.prose p {
+				line-height: 1.7;
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<article>
+				<div class="prose">
+					<div class="title">
+						<h1>Risk Disclaimer</h1>
+						<div class="rule"></div>
+					</div>
+
+					<p>
+						The information provided on this website is for educational and informational purposes
+						only. Nothing published by AO Trading or the AO Team constitutes financial, investment,
+						trading, legal, tax, or other professional advice, nor should it be understood as a
+						recommendation to buy, sell, hold, or trade any financial instrument or digital asset.
+					</p>
+					<p>
+						Trading financial markets, including cryptocurrencies, forex, and other leveraged or
+						speculative instruments, involves substantial risk of loss. You may lose some or all of
+						the capital you trade. Leverage can increase both gains and losses. You should only
+						trade with capital you can afford to lose and should independently assess whether
+						trading is appropriate for your circumstances.
+					</p>
+					<p>
+						Past performance, historical results, examples, backtests, hypothetical scenarios,
+						signals, and other performance information discussed on this website are not guarantees
+						or reliable indicators of future results. Individual outcomes will vary, and actual
+						trading results may differ from published or illustrative results due to execution,
+						liquidity, spreads, fees, slippage, market conditions, timing, and other factors.
+					</p>
+					<p>
+						Any trading signals, market observations, strategies, analysis, or commentary published
+						by AO Trading are provided as information for the reader to evaluate independently. No
+						representation is made that any particular result will be achieved.
+					</p>
+					<p>
+						Where performance information or trade records are presented, readers should consider
+						the methodology, time period, sample size, assumptions, and limitations involved before
+						drawing conclusions from them.
+					</p>
+					<p>
+						You are solely responsible for your own trading decisions and for conducting your own
+						research and due diligence. Before making financial decisions, consider seeking advice
+						from a qualified, appropriately licensed financial professional.
+					</p>
+					<p>
+						AO Trading does not accept liability for losses arising from reliance on information
+						published on this website.
+					</p>
+				</div>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>

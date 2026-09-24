@@ -5,9 +5,10 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import RiskDisclaimer from '../components/RiskDisclaimer.astro';
 
 type BlogData = CollectionEntry<'blog'>['data'];
-type Props = Pick<BlogData, 'title' | 'description' | 'pubDate'> &
+type Props = Pick<BlogData, 'title' | 'description' | 'pubDate' | 'author'> &
 	Partial<Pick<BlogData, 'updatedDate' | 'heroImage' | 'heroImageAlt' | 'category'>> & {
 		readingMinutes?: number;
 	};
@@ -16,6 +17,7 @@ const {
 	title,
 	description,
 	pubDate,
+	author,
 	updatedDate,
 	heroImage,
 	heroImageAlt,
@@ -26,7 +28,13 @@ const {
 
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead
+			title={title}
+			description={description}
+			image={heroImage}
+			ogType="article"
+			imageAlt={heroImageAlt}
+		/>
 		<style>
 			main {
 				width: calc(100% - 2em);
@@ -125,7 +133,7 @@ const {
 <div class="title">
 	{category && <p class="category">{category}</p>}
 	<div class="date">
-		<FormattedDate date={pubDate} />
+		{author} · <FormattedDate date={pubDate} />
 		{readingMinutes && <span> · {readingMinutes} min read</span>}
 		{
 			updatedDate && (
@@ -139,6 +147,7 @@ const {
 	<div class="rule"></div>
 </div>
 					<slot />
+					<RiskDisclaimer />
 				</div>
 			</article>
 		</main>

@@ -1,0 +1,53 @@
+---
+// Short risk notice linking to the full disclaimer page. The full legal text
+// lives on /disclaimer/; the wording here is derived from it.
+interface Props {
+	compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<aside class:list={['risk-disclaimer', { compact }]}>
+	<p>
+		{
+			compact ? (
+				<>
+					Content is educational and is not financial advice. Trading involves substantial risk of
+					loss — see the <a href="/disclaimer/">Risk Disclaimer</a>.
+				</>
+			) : (
+				<>
+					Nothing published here is financial, investment, or trading advice. Trading involves
+					substantial risk of loss, including the loss of all capital — read the full{' '}
+					<a href="/disclaimer/">Risk Disclaimer</a>.
+				</>
+			)
+		}
+	</p>
+</aside>
+
+<style>
+	.risk-disclaimer {
+		margin-top: 2.5em;
+		padding-top: 1.25em;
+		border-top: 1px solid var(--line);
+	}
+	.risk-disclaimer p {
+		margin: 0;
+		font-size: 0.85rem;
+		line-height: 1.6;
+		color: rgb(var(--muted-rgb));
+	}
+	.risk-disclaimer a {
+		color: var(--link);
+	}
+	.risk-disclaimer.compact {
+		margin-top: 0;
+		padding-top: 0;
+		border-top: none;
+	}
+	.risk-disclaimer.compact p {
+		font-size: 0.8rem;
+	}
+</style>

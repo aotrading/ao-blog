@@ -1,9 +1,12 @@
 ---
+import RiskDisclaimer from './RiskDisclaimer.astro';
+
 const today = new Date();
 ---
 
 <footer>
 	<p>&copy; {today.getFullYear()} AO Trading. All rights reserved.</p>
+	<RiskDisclaimer compact />
 	<p><a href="https://aotrading.io">Visit the main website</a></p>
 </footer>
 

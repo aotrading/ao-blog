@@ -8,6 +8,14 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
 	site: 'https://blog.aotrading.io',
 	integrations: [mdx(), sitemap()],
+	// Pre-rename post URLs. Static output emits meta-refresh pages for these,
+	// since GitHub Pages cannot serve 301s.
+	redirects: {
+		'/blog/RM': '/blog/risk-management-in-trading/',
+		'/blog/Signals': '/blog/crypto-trading-signals-guide/',
+		'/blog/SL': '/blog/stop-loss-slippage/',
+		'/blog/Verify': '/blog/verify-signal-provider-track-record/',
+	},
 	fonts: [
 		{
 			provider: fontProviders.google(),

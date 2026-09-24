@@ -17,6 +17,8 @@ const blog = defineCollection({
 			heroImage: z.optional(image()),
 			// Describes the hero image for screen readers and search engines
 			heroImageAlt: z.string().default(''),
+			// Every post is published by the team by default
+			author: z.string().default('AO Team'),
 			// Drafts are hidden from the live site (wired up in Step 4.2)
 			draft: z.boolean().default(false),
 						// Manually curated; controls the "Popular questions" section on the home page

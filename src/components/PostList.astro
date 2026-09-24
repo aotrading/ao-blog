@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import { readingTime } from '../lib/posts';
+import { readingTime, postUrl } from '../lib/posts';
 import FormattedDate from './FormattedDate.astro';
 
 interface Props {
@@ -19,7 +19,7 @@ const { posts } = Astro.props;
 			<ul>
 				{posts.map((post) => (
 					<li>
-						<a class="card" href={`/blog/${post.id}/`}>
+						<a class="card" href={postUrl(post.id)}>
 							{post.data.heroImage && (
 								<Image
 									width={960}
