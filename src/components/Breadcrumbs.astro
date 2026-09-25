@@ -1,0 +1,82 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { categories } from '../lib/categories';
+
+interface Props {
+	category: NonNullable<CollectionEntry<'blog'>['data']['category']>;
+	title: string;
+}
+
+const { category, title } = Astro.props;
+
+const categorySlug = categories.find((c) => c.name === category)?.slug;
+const categoryUrl = categorySlug ? `/blog/category/${categorySlug}/` : undefined;
+
+const breadcrumbs = [
+	{ name: 'Home', url: '/' },
+	{ name: 'Articles', url: '/blog/' },
+	...(categoryUrl ? [{ name: category, url: categoryUrl }] : []),
+	{ name: title, url: Astro.url.pathname },
+];
+
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: breadcrumbs.map((crumb, index) => ({
+		'@type': 'ListItem',
+		position: index + 1,
+		name: crumb.name,
+		...(index < breadcrumbs.length - 1 ? { item: new URL(crumb.url, Astro.site).href } : {}),
+	})),
+};
+---
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+	<ol>
+		{
+			breadcrumbs.map((crumb, index) =>
+				index < breadcrumbs.length - 1 ? (
+					<li>
+						<a href={crumb.url}>{crumb.name}</a>
+					</li>
+				) : (
+					<li aria-current="page">{crumb.name}</li>
+				)
+			)
+		}
+	</ol>
+</nav>
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+<style>
+	.breadcrumbs {
+		margin: 0 0 1em 0;
+	}
+	.breadcrumbs ol {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35em;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.75rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.breadcrumbs li + li::before {
+		content: '/';
+		margin-right: 0.35em;
+		color: rgb(var(--muted-rgb));
+	}
+	.breadcrumbs a {
+		color: var(--link);
+		text-decoration: none;
+	}
+	.breadcrumbs a:hover {
+		text-decoration: underline;
+	}
+	.breadcrumbs [aria-current] {
+		color: rgb(var(--muted-rgb));
+	}
+</style>

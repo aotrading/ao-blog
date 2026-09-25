@@ -1,4 +1,5 @@
 ---
+import CookieConsent from './CookieConsent.astro';
 import RiskDisclaimer from './RiskDisclaimer.astro';
 
 const today = new Date();
@@ -7,8 +8,14 @@ const today = new Date();
 <footer>
 	<p>&copy; {today.getFullYear()} AO Trading. All rights reserved.</p>
 	<RiskDisclaimer compact />
-	<p><a href="https://aotrading.io">Visit the main website</a></p>
+	<p>
+		<a href="https://aotrading.io">Visit the main website</a> ·
+		<a href="#" id="cookie-settings">Cookie settings</a>
+	</p>
 </footer>
+
+<!-- Rendered here so every page that includes the footer gets the banner -->
+<CookieConsent />
 
 <style>
 	footer {

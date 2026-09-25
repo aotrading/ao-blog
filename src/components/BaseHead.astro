@@ -18,6 +18,11 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const { title, description, image = FallbackImage, ogType = 'website', imageAlt } = Astro.props;
+
+// GA loads only when PUBLIC_GA_ID is set at build time (repo variable of the
+// same name in the Actions workflow). Consent defaults below mean it stays
+// cookieless until the visitor accepts in the banner.
+const GA_ID = import.meta.env.PUBLIC_GA_ID as string | undefined;
 ---
 
 <!-- Global Metadata -->
@@ -43,6 +48,40 @@ const { title, description, image = FallbackImage, ogType = 'website', imageAlt 
 	href={new URL('rss.xml', Astro.site)}
 />
 <meta name="generator" content={Astro.generator} />
+
+<!-- Google Consent Mode v2: denied by default, before any GA code loads.
+     The consent banner (CookieConsent.astro) pushes the 'consent' 'update'
+     when the visitor makes a choice. -->
+<script is:inline>
+	(function () {
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			window.dataLayer.push(arguments);
+		}
+		gtag('consent', 'default', {
+			analytics_storage: 'denied',
+			ad_storage: 'denied',
+			ad_user_data: 'denied',
+			ad_personalization: 'denied',
+		});
+	})();
+</script>
+
+{
+	GA_ID && (
+		<>
+			<script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+			<script is:inline define:vars={{ GA_ID }}>
+				window.dataLayer = window.dataLayer || [];
+				function gtag() {
+					window.dataLayer.push(arguments);
+				}
+				gtag('js', new Date());
+				gtag('config', GA_ID);
+			</script>
+		</>
+	)
+}
 
 <Font cssVariable="--font-manrope" preload />
 <Font cssVariable="--font-crucial" preload />

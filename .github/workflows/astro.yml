@@ -67,6 +67,10 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
         working-directory: ${{ env.BUILD_PATH }}
       - name: Build with Astro
+        # GA loads only if the PUBLIC_GA_ID repository variable is set
+        # (gh variable set PUBLIC_GA_ID --body "G-XXXXXXX")
+        env:
+          PUBLIC_GA_ID: ${{ vars.PUBLIC_GA_ID }}
         run: |
           ${{ steps.detect-package-manager.outputs.runner }} astro build \
             --site "https://blog.aotrading.io" \

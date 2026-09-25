@@ -1,0 +1,117 @@
+---
+// Global cookie consent banner (Google Consent Mode v2, default denied).
+// The consent default itself is set in BaseHead, before the GA loader.
+// The visitor's choice is stored in localStorage; the "Cookie settings"
+// link in the footer clears it and shows the banner again.
+---
+
+<div id="cookie-consent" hidden>
+	<p>
+		We use analytics cookies (Google Analytics) to understand how the site is used — no
+		advertising, no tracking across other sites. You can change your choice anytime via
+		“Cookie settings” in the footer.
+	</p>
+	<div class="actions">
+		<button id="cookie-accept" class="accept" type="button">Accept</button>
+		<button id="cookie-decline" class="decline" type="button">Decline</button>
+	</div>
+</div>
+
+<style>
+	#cookie-consent {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 100;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75em 1.5em;
+		max-width: 720px;
+		margin: 0 auto;
+		padding: 1em 1.25em;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-bottom: none;
+		box-shadow: var(--box-shadow);
+		font-size: 0.85rem;
+		line-height: 1.5;
+		color: var(--text);
+	}
+	#cookie-consent[hidden] {
+		display: none;
+	}
+	#cookie-consent p {
+		margin: 0;
+	}
+	.actions {
+		display: flex;
+		gap: 0.5em;
+	}
+	button {
+		padding: 0.5em 1.25em;
+		border-radius: 6px;
+		border: 1px solid var(--line);
+		background: transparent;
+		color: var(--text);
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+		white-space: nowrap;
+	}
+	button:hover {
+		border-color: var(--brand-yellow);
+	}
+	button:focus-visible {
+		outline: 2px solid var(--brand-yellow);
+		outline-offset: 2px;
+	}
+	.accept {
+		background: var(--brand-yellow);
+		border-color: var(--brand-yellow);
+		color: #111111;
+	}
+</style>
+
+<script>
+	const STORAGE_KEY = 'cookie-consent';
+	const banner = document.getElementById('cookie-consent');
+
+	function storedChoice(): string | null {
+		try {
+			return localStorage.getItem(STORAGE_KEY);
+		} catch {
+			return null;
+		}
+	}
+
+	function decide(choice: 'granted' | 'denied') {
+		try {
+			localStorage.setItem(STORAGE_KEY, choice);
+		} catch {}
+		const gtag = function (...args: unknown[]) {
+			(window.dataLayer = window.dataLayer || []).push(args);
+		};
+		gtag('consent', 'update', {
+			analytics_storage: choice,
+			ad_storage: 'denied',
+			ad_user_data: 'denied',
+			ad_personalization: 'denied',
+		});
+		banner?.setAttribute('hidden', '');
+	}
+
+	if (!storedChoice()) {
+		banner?.removeAttribute('hidden');
+	}
+
+	document.getElementById('cookie-accept')?.addEventListener('click', () => decide('granted'));
+	document.getElementById('cookie-decline')?.addEventListener('click', () => decide('denied'));
+
+	document.getElementById('cookie-settings')?.addEventListener('click', (event) => {
+		event.preventDefault();
+		banner?.removeAttribute('hidden');
+	});
+</script>

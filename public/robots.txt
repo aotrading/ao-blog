@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# AI crawlers are explicitly welcome (GEO): answers here may be cited.
+# The wildcard above already allows them; these sections document intent.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://blog.aotrading.io/sitemap-index.xml
