@@ -1,0 +1,118 @@
+---
+// Reusable call-to-action. Content comes entirely from props — per-article
+// CTAs are configured in post frontmatter (ctaPrimary / ctaSecondary) and
+// resolved in the BlogPost layout via lib/ctas.ts.
+import type { CtaPlatform } from '../lib/ctas';
+import PlatformIcon from './PlatformIcon.astro';
+
+interface Props {
+	href: string;
+	label: string;
+	title?: string;
+	description?: string;
+	platform?: CtaPlatform;
+	variant?: 'primary' | 'secondary';
+}
+
+const { href, label, title, description, platform, variant = 'primary' } = Astro.props;
+
+const external = /^https?:\/\//.test(href) && !href.startsWith('https://blog.aotrading.io');
+---
+
+<a
+	class:list={['cta', variant]}
+	href={href}
+	data-pagefind-ignore
+	{...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+>
+	{platform && (
+		<span class="icon">
+			<PlatformIcon platform={platform} size={24} />
+		</span>
+	)}
+	<span class="body">
+		{title && <span class="title">{title}</span>}
+		{description && <span class="description">{description}</span>}
+		<span class="label">
+			{label}
+			<span class="arrow" aria-hidden="true">→</span>
+		</span>
+	</span>
+</a>
+
+<style>
+	.cta {
+		display: flex;
+		align-items: center;
+		gap: 1em;
+		margin: 2.5em 0;
+		padding: 1.1em 1.25em;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		text-decoration: none;
+		transition: border-color 0.2s ease;
+	}
+	.cta:hover,
+	.cta:focus-visible {
+		border-color: var(--brand-yellow);
+	}
+	.cta:focus-visible {
+		outline: 2px solid var(--brand-yellow);
+		outline-offset: 2px;
+	}
+
+	.icon {
+		display: flex;
+		flex: none;
+	}
+
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25em;
+	}
+	.title {
+		font-weight: 700;
+	}
+	.description {
+		font-size: 0.9rem;
+		line-height: 1.5;
+		color: rgb(var(--muted-rgb));
+	}
+	.label {
+		font-weight: 700;
+		font-size: 0.9rem;
+	}
+	.arrow {
+		display: inline-block;
+		margin-left: 0.35em;
+		transition: transform 0.2s ease;
+	}
+	.cta:hover .arrow {
+		transform: translateX(3px);
+	}
+
+	/* Primary: solid brand fill; secondary: outline */
+	.cta.primary {
+		background: var(--brand-yellow);
+		border-color: var(--brand-yellow);
+		color: #111111;
+	}
+	.cta.primary .description {
+		color: rgb(17 13 0 / 75%);
+	}
+	.cta.secondary {
+		background: var(--surface);
+		color: var(--text);
+	}
+	.cta.secondary .label {
+		color: var(--link);
+	}
+
+	@media (max-width: 720px) {
+		.cta {
+			flex-direction: row;
+			align-items: flex-start;
+		}
+	}
+</style>

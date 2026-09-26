@@ -1,15 +1,101 @@
+# Default: deny all unspecified crawlers.
 User-agent: *
+Disallow: /
+
+# =========================
+# ChatGPT — search only
+# =========================
+
+User-agent: OAI-SearchBot
 Allow: /
 
-# AI crawlers are explicitly welcome (GEO): answers here may be cited.
-# The wildcard above already allows them; these sections document intent.
 User-agent: GPTBot
+Disallow: /
+
+# =========================
+# Claude — search only
+# =========================
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
 Allow: /
 
 User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+# =========================
+# Kimi — search/retrieval only
+# =========================
+
+User-agent: Kimi-SearchBot
 Allow: /
+
+User-agent: Kimi-User
+Allow: /
+
+User-agent: KimiBot
+Disallow: /
+
+# =========================
+# Perplexity
+# =========================
 
 User-agent: PerplexityBot
 Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# =========================
+# Gemini / Google
+# =========================
+
+User-agent: Googlebot
+Allow: /
+
+# Do not permit Google content to be
+# used for Gemini model training.
+User-agent: Google-Extended
+Disallow: /
+
+# =========================
+# Microsoft Copilot / Bing
+# =========================
+
+User-agent: Bingbot
+Allow: /
+
+# =========================
+# DeepSeek
+# =========================
+
+User-agent: DeepSeekBot
+Disallow: /
+
+# =========================
+# Qwen
+# =========================
+
+User-agent: Qwen-SearchBot
+Allow: /
+
+User-agent: Qwen-User
+Allow: /
+
+# Block training crawler if/when applicable.
+User-agent: QwenBot
+Disallow: /
+
+# =========================
+# GLM / Z.ai
+# =========================
+
+User-agent: ChatGLM-Spider
+Disallow: /
 
 Sitemap: https://blog.aotrading.io/sitemap-index.xml

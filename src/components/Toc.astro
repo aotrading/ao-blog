@@ -1,0 +1,71 @@
+---
+// Automatic table of contents. Rendered from the headings Astro generates
+// for each post; only H2 sections are listed, and the TOC appears only when
+// there are enough of them (3+) to be useful.
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+interface Props {
+	headings: Heading[];
+}
+
+const { headings } = Astro.props;
+const entries = headings.filter((heading) => heading.depth === 2);
+const show = entries.length >= 3;
+---
+
+{
+	show && (
+		<nav class="toc" aria-label="Table of contents" data-pagefind-ignore>
+			<p class="toc-title">On this page</p>
+			<ol>
+				{entries.map((heading) => (
+					<li>
+						<a href={`#${heading.slug}`}>{heading.text}</a>
+					</li>
+				))}
+			</ol>
+		</nav>
+	)
+}
+
+<style>
+	/* Jump links should glide; the TOC is the only in-page navigation. */
+	:global(html) {
+		scroll-behavior: smooth;
+	}
+	.toc {
+		margin: 0 0 2em;
+		padding: 1em 1.25em;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: var(--surface);
+	}
+	.toc-title {
+		margin: 0 0 0.5em;
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: rgb(var(--muted-rgb));
+	}
+	ol {
+		margin: 0;
+		padding: 0 0 0 1.25em;
+	}
+	li {
+		margin: 0.3em 0;
+		font-size: 0.9rem;
+		line-height: 1.45;
+	}
+	a {
+		color: var(--link);
+		text-decoration: none;
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+</style>

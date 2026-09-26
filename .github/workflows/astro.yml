@@ -68,13 +68,15 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
       - name: Build with Astro
         # GA loads only if the PUBLIC_GA_ID repository variable is set
-        # (gh variable set PUBLIC_GA_ID --body "G-XXXXXXX")
+        # (gh variable set PUBLIC_GA_ID --body "G-XXXXXXX").
+        # Pagefind indexes the built posts into dist/pagefind/ for site search.
         env:
           PUBLIC_GA_ID: ${{ vars.PUBLIC_GA_ID }}
         run: |
           ${{ steps.detect-package-manager.outputs.runner }} astro build \
             --site "https://blog.aotrading.io" \
             --base "/"
+          ${{ steps.detect-package-manager.outputs.runner }} pagefind --site dist
         working-directory: ${{ env.BUILD_PATH }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

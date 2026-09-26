@@ -3,16 +3,22 @@ import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Cta from '../components/Cta.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import RiskDisclaimer from '../components/RiskDisclaimer.astro';
+import Toc from '../components/Toc.astro';
 import { SITE_TITLE } from '../consts';
+import { resolveCta, type CtaConfig } from '../lib/ctas';
 
 type BlogData = CollectionEntry<'blog'>['data'];
 type Props = Pick<BlogData, 'title' | 'description' | 'pubDate' | 'author'> &
-	Partial<Pick<BlogData, 'updatedDate' | 'heroImage' | 'heroImageAlt' | 'category'>> & {
+	Partial<
+		Pick<BlogData, 'updatedDate' | 'heroImage' | 'heroImageAlt' | 'category' | 'ctaPrimary' | 'ctaSecondary'>
+	> & {
 		readingMinutes?: number;
+		headings?: { depth: number; slug: string; text: string }[];
 	};
 
 const {
@@ -24,8 +30,14 @@ const {
 	heroImage,
 	heroImageAlt,
 	category,
+	ctaPrimary,
+	ctaSecondary,
 	readingMinutes,
+	headings = [],
 } = Astro.props;
+
+const primaryCta = ctaPrimary ? resolveCta(ctaPrimary as CtaConfig) : null;
+const secondaryCta = ctaSecondary ? resolveCta(ctaSecondary as CtaConfig) : null;
 
 const articleSchema = {
 	'@context': 'https://schema.org',
@@ -141,7 +153,9 @@ const articleSchema = {
 	<body>
 		<Header />
 		<main>
-			<article>
+			<!-- Pagefind indexes only this content; pages without the attribute
+			     (home, listing, 404, redirects) are excluded from search. -->
+			<article data-pagefind-body>
 				<div class="hero-image">
 					{heroImage && <Image width={1020} height={510} src={heroImage} alt={heroImageAlt ?? ''} />}
 				</div>
@@ -160,10 +174,13 @@ const articleSchema = {
 			)
 		}
 	</div>
-	<h1>{title}</h1>
-	<div class="rule"></div>
-</div>
-					<slot />
+					<h1>{title}</h1>
+					<div class="rule"></div>
+				</div>
+					<Toc headings={headings} />
+						<slot />
+					{primaryCta && <Cta {...primaryCta} variant="primary" />}
+					{secondaryCta && <Cta {...secondaryCta} variant="secondary" />}
 					<RiskDisclaimer />
 				</div>
 			</article>

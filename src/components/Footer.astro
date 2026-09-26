@@ -1,12 +1,31 @@
 ---
 import CookieConsent from './CookieConsent.astro';
+import PlatformIcon from './PlatformIcon.astro';
 import RiskDisclaimer from './RiskDisclaimer.astro';
+import { SOCIAL_LABELS, SOCIAL_LINKS, SOCIAL_ORDER } from '../lib/ctas';
 
 const today = new Date();
+
+const socialLinks = SOCIAL_ORDER.map((platform) => ({
+	platform,
+	href: SOCIAL_LINKS[platform],
+	label: SOCIAL_LABELS[platform],
+}));
 ---
 
 <footer>
 	<p>&copy; {today.getFullYear()} AO Trading. All rights reserved.</p>
+	<ul class="social-links">
+		{
+			socialLinks.map(({ platform, href, label }) => (
+				<li>
+					<a href={href} aria-label={`AO Trading on ${label}`} target="_blank" rel="noopener noreferrer">
+						<PlatformIcon platform={platform} size={20} />
+					</a>
+				</li>
+			))
+		}
+	</ul>
 	<RiskDisclaimer compact />
 	<p>
 		<a href="https://aotrading.io">Visit the main website</a> ·
@@ -31,5 +50,32 @@ const today = new Date();
 	}
 	footer a {
 		color: var(--text);
+	}
+	.social-links {
+		display: flex;
+		justify-content: center;
+		gap: 0.75em;
+		margin: 0.75em 0 1em;
+		padding: 0;
+		list-style: none;
+	}
+	.social-links a {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		color: var(--text);
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		transition: border-color 0.2s ease;
+	}
+	.social-links a:hover,
+	.social-links a:focus-visible {
+		border-color: var(--brand-yellow);
+	}
+	.social-links a:focus-visible {
+		outline: 2px solid var(--brand-yellow);
+		outline-offset: 2px;
 	}
 </style>

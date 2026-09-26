@@ -8,7 +8,7 @@ interface Props {
 const { compact = false } = Astro.props;
 ---
 
-<aside class:list={['risk-disclaimer', { compact }]}>
+<aside class:list={['risk-disclaimer', { compact }]} data-pagefind-ignore>
 	<p>
 		{
 			compact ? (

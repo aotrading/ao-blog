@@ -1,0 +1,205 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Search | ${SITE_TITLE}`}
+			description="Search all articles on the AO Trading blog."
+		/>
+		<meta name="robots" content="noindex" />
+		<style>
+			main {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: 0 auto;
+				padding: 2em 1em 3em;
+			}
+			.page-title {
+				margin: 0 0 0.5rem 0;
+				font-size: 2.2rem;
+			}
+			.rule {
+				width: 56px;
+				height: 3px;
+				margin: 0 0 2rem 0;
+				background: var(--brand-yellow);
+			}
+			.search-box {
+				position: relative;
+			}
+			.search-box input {
+				width: 100%;
+				padding: 0.75em 1em;
+				font: inherit;
+				color: var(--text);
+				background: var(--surface);
+				border: 1px solid var(--line);
+				border-radius: 8px;
+			}
+			.search-box input:focus-visible {
+				outline: 2px solid var(--brand-yellow);
+				outline-offset: 2px;
+			}
+			.status {
+				margin: 1em 0 0;
+				font-size: 0.9rem;
+				color: rgb(var(--muted-rgb));
+			}
+			.results {
+				margin: 1.5em 0 0;
+				padding: 0;
+				list-style: none;
+			}
+			.results li + li {
+				margin-top: 1em;
+			}
+			.results a {
+				display: block;
+				padding: 1em 1.25em;
+				border: 1px solid var(--line);
+				border-radius: 8px;
+				background: var(--surface);
+				color: var(--text);
+				text-decoration: none;
+				transition: border-color 0.2s ease;
+			}
+			.results a:hover,
+			.results a:focus-visible {
+				border-color: var(--brand-yellow);
+			}
+			.results .result-title {
+				display: block;
+				margin-bottom: 0.35em;
+				font-weight: 700;
+			}
+			.results .result-excerpt {
+				font-size: 0.9rem;
+				line-height: 1.55;
+				color: rgb(var(--muted-rgb));
+			}
+			.results :global(mark) {
+				/* --brand-yellow (#c9a227) at 25% over either theme */
+				background: rgb(201 162 39 / 25%);
+				color: inherit;
+				border-radius: 2px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<h1 class="page-title">Search</h1>
+			<div class="rule"></div>
+
+			<div class="search-box">
+				<label class="visually-hidden" for="search-input">Search articles</label>
+				<input
+					id="search-input"
+					type="search"
+					placeholder="Search articles…"
+					autocomplete="off"
+					autofocus
+				/>
+			</div>
+			<p class="status" id="search-status" aria-live="polite">Type to search all articles.</p>
+			<ul class="results" id="search-results"></ul>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<!-- is:inline: the Pagefind index only exists after the static build, so this
+     script must ship unprocessed — Vite's import wrapping cannot reach it. -->
+<script is:inline>
+	(function () {
+		var input = document.getElementById('search-input');
+		var resultsList = document.getElementById('search-results');
+		var status = document.getElementById('search-status');
+
+		// The index lives at /pagefind/, generated after `astro build`. It does
+		// not exist under `astro dev`, so degrade gracefully there.
+		var pagefind = null;
+		var loadPagefind = function () {
+			if (pagefind !== null) return Promise.resolve();
+			return import('/pagefind/pagefind.js')
+				.then(function (mod) {
+					pagefind = mod;
+				})
+				.catch(function () {
+					pagefind = false;
+					status.textContent = 'Search is available on the published site.';
+				});
+		};
+		loadPagefind();
+
+		var debounce;
+
+		function runSearch() {
+			loadPagefind().then(function () {
+				var query = input.value.trim();
+				resultsList.innerHTML = '';
+
+				if (!query || !pagefind) return;
+
+				pagefind.search(query).then(function (search) {
+					status.textContent =
+						search.results.length === 0
+							? 'No articles found for \u201C' + query + '\u201D.'
+							: search.results.length +
+								' ' +
+								(search.results.length === 1 ? 'article' : 'articles') +
+								' found for \u201C' +
+								query +
+								'\u201D.';
+
+					var shown = search.results.slice(0, 8);
+					shown.forEach(function (result) {
+						result.data().then(function (data) {
+							var li = document.createElement('li');
+							var link = document.createElement('a');
+							link.href = data.url;
+
+							var title = document.createElement('span');
+							title.className = 'result-title';
+							title.textContent = data.meta.title;
+
+							var excerpt = document.createElement('span');
+							excerpt.className = 'result-excerpt';
+							excerpt.innerHTML = data.excerpt;
+
+							link.append(title, excerpt);
+							li.append(link);
+							resultsList.append(li);
+						});
+					});
+				});
+			});
+		}
+
+		input.addEventListener('input', function () {
+			clearTimeout(debounce);
+			debounce = setTimeout(runSearch, 180);
+		});
+	})();
+</script>
+
+<style>
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+		border: 0;
+	}
+</style>
