@@ -161,7 +161,7 @@ const articleSchema = {
 				</div>
 				<div class="prose">
 					{category && <Breadcrumbs category={category} title={title} />}
-					<div class="title">
+					<div class="title" data-pagefind-ignore>
 	{category && <p class="category">{category}</p>}
 	<div class="date">
 		{author} · <FormattedDate date={pubDate} />
