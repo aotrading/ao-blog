@@ -153,15 +153,13 @@ const articleSchema = {
 	<body>
 		<Header />
 		<main>
-			<!-- Pagefind indexes only this content; pages without the attribute
-			     (home, listing, 404, redirects) are excluded from search. -->
-			<article data-pagefind-body>
+			<article>
 				<div class="hero-image">
 					{heroImage && <Image width={1020} height={510} src={heroImage} alt={heroImageAlt ?? ''} />}
 				</div>
 				<div class="prose">
 					{category && <Breadcrumbs category={category} title={title} />}
-					<div class="title" data-pagefind-ignore>
+				<div class="title">
 	{category && <p class="category">{category}</p>}
 	<div class="date">
 		{author} · <FormattedDate date={pubDate} />
@@ -174,7 +172,8 @@ const articleSchema = {
 			)
 		}
 	</div>
-					<h1>{title}</h1>
+	<!-- Search indexes only the title (title-only search) -->
+	<h1 data-pagefind-body>{title}</h1>
 					<div class="rule"></div>
 				</div>
 					<Toc headings={headings} />

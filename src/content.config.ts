@@ -2,20 +2,25 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { CATEGORY_NAMES } from './lib/categories';
-import { CTA_PLATFORMS } from './lib/ctas';
+import { CTA_PLATFORMS, isCtaHref } from './lib/ctas';
 
 // A CTA slot on a post. It needs somewhere to go: an explicit href or one of
 // the known platforms (whose URLs live in lib/ctas.ts).
 const cta = z
 	.object({
 		platform: z.enum(CTA_PLATFORMS).optional(),
-		href: z.string().optional(),
-		label: z.string().optional(),
-		title: z.string().optional(),
-		description: z.string().optional(),
+		href: z.string().trim().refine(isCtaHref, {
+			message: 'Use an HTTP(S) URL or a root-relative path for a CTA',
+		}).optional(),
+		label: z.string().trim().min(1).optional(),
+		title: z.string().trim().min(1).optional(),
+		description: z.string().trim().min(1).optional(),
 	})
 	.refine((value) => Boolean(value.href ?? value.platform), {
 		message: 'A CTA needs an href or a platform',
+	})
+	.refine((value) => value.platform !== 'newsletter' || Boolean(value.href), {
+		message: 'A newsletter CTA needs an explicit signup URL; no provider is configured by default',
 	})
 	.optional();
 

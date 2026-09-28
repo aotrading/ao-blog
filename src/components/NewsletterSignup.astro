@@ -1,0 +1,73 @@
+---
+import Cta from './Cta.astro';
+import { NEWSLETTER_CONFIG, validateNewsletter, type NewsletterConfig } from '../lib/newsletter';
+
+interface Props {
+	config?: NewsletterConfig | null;
+	variant?: 'primary' | 'secondary';
+}
+
+const { config = NEWSLETTER_CONFIG, variant = 'secondary' } = Astro.props;
+if (config) validateNewsletter(config);
+---
+
+{config?.mode === 'link' && (
+	<Cta href={config.href} title={config.title} description={config.description}
+		label={config.label} platform="newsletter" variant={variant} />
+)}
+{config?.mode === 'form' && (
+	<section class="newsletter" aria-label={config.title} data-pagefind-ignore>
+		<h2>{config.title}</h2>
+		<p>{config.description}</p>
+		<form action={config.action} method="post">
+			{Object.entries(config.hiddenFields ?? {}).map(([name, value]) => (
+				<input type="hidden" name={name} value={value} />
+			))}
+			<label>
+				Email address
+				<input type="email" name={config.emailField} autocomplete="email" required />
+			</label>
+			<p class="consent">{config.consentText} {config.privacyHref && <a href={config.privacyHref}>Privacy policy</a>}</p>
+			<button class:list={[variant]} type="submit">{config.label}</button>
+		</form>
+	</section>
+)}
+
+<style>
+	.newsletter {
+		margin: 2.5em 0;
+		padding: 1.1em 1.25em;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: var(--surface);
+	}
+	h2 { font-size: 1.4rem; }
+	p { margin: 0.75em 0; }
+	label { display: block; font-weight: 700; }
+	input[type='email'] {
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		margin-top: 0.4em;
+		padding: 0.65em 0.8em;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		background: var(--bg);
+		color: var(--text);
+		font: inherit;
+	}
+	.consent { font-size: 0.85rem; color: rgb(var(--muted-rgb)); }
+	button {
+		padding: 0.65em 1em;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+		background: var(--surface);
+		color: var(--link);
+	}
+	button.primary { background: var(--brand-yellow); border-color: var(--brand-yellow); color: #111111; }
+	button:hover { border-color: var(--brand-yellow); }
+	input:focus-visible, button:focus-visible { outline: 2px solid var(--brand-yellow); outline-offset: 2px; }
+</style>

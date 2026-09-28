@@ -5,6 +5,19 @@
 export const CTA_PLATFORMS = ['twitter', 'instagram', 'newsletter', 'discord', 'youtube'] as const;
 export type CtaPlatform = (typeof CTA_PLATFORMS)[number];
 
+// Accept explicit web destinations and local paths, but not script schemes
+// or protocol-relative URLs. Used by the content schema and signup component.
+export function isCtaHref(value: string): boolean {
+	if (!value || value !== value.trim() || /[\s\\]/.test(value)) return false;
+	if (value.startsWith('/') && !value.startsWith('//')) return true;
+	try {
+		const url = new URL(value);
+		return ['https:', 'http:'].includes(url.protocol) && Boolean(url.hostname);
+	} catch {
+		return false;
+	}
+}
+
 // Confirmed account URLs (footer + CTA defaults share these).
 export const SOCIAL_LINKS = {
 	discord: 'https://discord.gg/aotrading',

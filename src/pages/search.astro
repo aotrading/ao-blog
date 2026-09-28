@@ -3,6 +3,15 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_TITLE } from '../consts';
+import { getPublishedPosts, postUrl } from '../lib/posts';
+
+// Pagefind is generated after the static build. Keep the title index available
+// to the dev server and as a fallback if the built index cannot be loaded.
+const searchPosts = (await getPublishedPosts()).map((post) => ({
+	url: postUrl(post.id),
+	meta: { title: post.data.title },
+}));
+const searchPostsJson = JSON.stringify(searchPosts).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -79,19 +88,7 @@ import { SITE_TITLE } from '../consts';
 			}
 			.results .result-title {
 				display: block;
-				margin-bottom: 0.35em;
 				font-weight: 700;
-			}
-			.results .result-excerpt {
-				font-size: 0.9rem;
-				line-height: 1.55;
-				color: rgb(var(--muted-rgb));
-			}
-			.results mark {
-				/* --brand-yellow (#c9a227) at 25% over either theme */
-				background: rgb(201 162 39 / 25%);
-				color: inherit;
-				border-radius: 2px;
 			}
 		</style>
 	</head>
@@ -114,82 +111,102 @@ import { SITE_TITLE } from '../consts';
 			</div>
 			<p class="status" id="search-status" aria-live="polite">Type to search all articles.</p>
 			<ul class="results" id="search-results"></ul>
+			<script id="search-posts" type="application/json" data-pagefind={import.meta.env.PROD} set:html={searchPostsJson}></script>
 		</main>
 		<Footer />
 	</body>
 </html>
 
-<!-- is:inline: the Pagefind index only exists after the static build, so this
-     script must ship unprocessed — Vite's import wrapping cannot reach it. -->
+<!-- is:inline: Pagefind is generated after the static build, so the dynamic
+     import must ship unprocessed. Development uses the embedded title index. -->
 <script is:inline>
 	(function () {
 		var input = document.getElementById('search-input');
 		var resultsList = document.getElementById('search-results');
 		var status = document.getElementById('search-status');
+		var searchData = document.getElementById('search-posts');
+		var fallbackPosts = JSON.parse(searchData.textContent);
+		var usePagefind = searchData.dataset.pagefind === 'true';
 
-		// The index lives at /pagefind/, generated after `astro build`. It does
-		// not exist under `astro dev`, so degrade gracefully there.
-		var pagefind = null;
-		var loadPagefind = function () {
-			if (pagefind !== null) return Promise.resolve();
-			return import('/pagefind/pagefind.js')
-				.then(function (mod) {
-					pagefind = mod;
-				})
-				.catch(function () {
-					pagefind = false;
-					status.textContent = 'Search is available on the published site.';
-				});
-		};
-		loadPagefind();
-
+		// The Pagefind index is generated after the static build. Development
+		// searches the embedded titles directly; production can fall back to them.
+		var pagefindPromise;
+		function loadPagefind() {
+			if (!pagefindPromise) pagefindPromise = import('/pagefind/pagefind.js');
+			return pagefindPromise;
+		}
 		var debounce;
+		var requestId = 0;
 
-		function runSearch() {
-			loadPagefind().then(function () {
-				var query = input.value.trim();
-				resultsList.innerHTML = '';
-
-				if (!query || !pagefind) return;
-
-				pagefind.search(query).then(function (search) {
-					status.textContent =
-						search.results.length === 0
-							? 'No articles found for \u201C' + query + '\u201D.'
-							: search.results.length +
-								' ' +
-								(search.results.length === 1 ? 'article' : 'articles') +
-								' found for \u201C' +
-								query +
-								'\u201D.';
-
-					var shown = search.results.slice(0, 8);
-					shown.forEach(function (result) {
-						result.data().then(function (data) {
-							var li = document.createElement('li');
-							var link = document.createElement('a');
-							link.href = data.url;
-
-							var title = document.createElement('span');
-							title.className = 'result-title';
-							title.textContent = data.meta.title;
-
-							var excerpt = document.createElement('span');
-							excerpt.className = 'result-excerpt';
-							excerpt.innerHTML = data.excerpt;
-
-							link.append(title, excerpt);
-							li.append(link);
-							resultsList.append(li);
-						});
-					});
-				});
+		function fallbackSearch(query) {
+			var words = query.toLocaleLowerCase().split(/\s+/);
+			return fallbackPosts.filter(function (post) {
+				var title = post.meta.title.toLocaleLowerCase();
+				return words.every(function (word) { return title.includes(word); });
 			});
+		}
+
+		function showResults(data, query) {
+			var seen = new Set();
+			var articles = data.filter(function (article) {
+				var url = new URL(article.url, window.location.origin);
+				url.hash = '';
+				url.pathname = url.pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+				if (seen.has(url.href)) return false;
+				seen.add(url.href);
+				return true;
+			});
+			var rows = articles.slice(0, 8).map(function (article) {
+				var li = document.createElement('li');
+				var link = document.createElement('a');
+				link.href = article.url;
+				var title = document.createElement('span');
+				title.className = 'result-title';
+				title.textContent = article.meta.title;
+				link.append(title);
+				li.append(link);
+				return li;
+			});
+			resultsList.replaceChildren(...rows);
+			status.textContent = articles.length === 0
+				? 'No articles found for \u201C' + query + '\u201D.'
+				: articles.length + ' ' + (articles.length === 1 ? 'article' : 'articles') +
+					' found for \u201C' + query + '\u201D.' + (articles.length > 8 ? ' Showing the first 8.' : '');
+		}
+
+		async function runSearch(query, id) {
+			if (!usePagefind) {
+				showResults(fallbackSearch(query), query);
+				return;
+			}
+			try {
+				var pagefind = await loadPagefind();
+				if (id !== requestId) return;
+				var search = await pagefind.search(query);
+				if (id !== requestId) return;
+				// Resolve together to retain relevance order and render only once.
+				var data = await Promise.all(search.results.map(function (result) {
+					return result.data();
+				}));
+				if (id !== requestId) return;
+
+				showResults(data, query);
+			} catch (error) {
+				if (id !== requestId) return;
+				pagefindPromise = null;
+				usePagefind = false;
+				showResults(fallbackSearch(query), query);
+			}
 		}
 
 		input.addEventListener('input', function () {
 			clearTimeout(debounce);
-			debounce = setTimeout(runSearch, 180);
+			// Invalidate immediately, including during the debounce or a clear.
+			var id = ++requestId;
+			var query = input.value.trim();
+			resultsList.replaceChildren();
+			status.textContent = query ? 'Searching…' : 'Type to search all articles.';
+			if (query) debounce = setTimeout(function () { runSearch(query, id); }, 180);
 		});
 	})();
 </script>

@@ -16,7 +16,7 @@ interface Props {
 
 const { href, label, title, description, platform, variant = 'primary' } = Astro.props;
 
-const external = /^https?:\/\//.test(href) && !href.startsWith('https://blog.aotrading.io');
+const external = new URL(href, Astro.url).origin !== Astro.url.origin;
 ---
 
 <a
