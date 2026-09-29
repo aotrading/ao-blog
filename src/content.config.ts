@@ -42,7 +42,7 @@ const blog = defineCollection({
 			author: z.string().default('AO Team'),
 			// Drafts are hidden from the live site (wired up in Step 4.2)
 			draft: z.boolean().default(false),
-						// Manually curated; controls the "Popular questions" section on the home page
+						// Retained for existing article metadata
 			featured: z.boolean().default(false),
 						// Fixed set of categories; a typo here fails the build
 			category: z.enum(CATEGORY_NAMES),

@@ -8,7 +8,6 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getPublishedPosts } from '../lib/posts';
 
 const posts = await getPublishedPosts();
-const featuredPosts = posts.filter((post) => post.data.featured).slice(0, 3);
 const latestPosts = posts.slice(0, 3);
 ---
 
@@ -76,13 +75,6 @@ const latestPosts = posts.slice(0, 3);
 				<h2 class="section-title">Browse by category</h2>
 				<CategoryCards />
 			</section>
-
-			{featuredPosts.length > 0 && (
-				<section>
-					<h2 class="section-title">Popular questions</h2>
-					<PostList posts={featuredPosts} />
-				</section>
-			)}
 
 			<section>
 				<h2 class="section-title">Latest articles</h2>
