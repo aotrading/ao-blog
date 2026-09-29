@@ -124,14 +124,15 @@ variable is `G-P5C668KRT7`, and the live homepage loads Google's tag with that
 same ID. No Measurement ID or implementation replacement is needed.
 
 Manual verification: confirm the intended GA4 web stream and a visit in
-Realtime/DebugView. Verify Accept, Decline, reload and Cookie settings behavior.
-One existing issue in source: CookieConsent reads a stored choice to hide the
-banner but does not reapply it on subsequent page loads, while BaseHead resets
-consent to denied. Resolve this separately before treating consent verification
-as complete; Analytics code was left unchanged under the C2 scope.
+Realtime/DebugView. The head script reads a valid stored analytics choice
+before loading the tag; the cookie banner updates consent when visitors change
+their choice. To test reporting, accept analytics, reload or navigate to another
+page, then check GA4 Realtime or Tag Assistant. Declined visitors receive
+limited cookieless measurement and may not appear in Realtime. Also check
+whether a browser extension blocks Google tags.
 
 ## Intentionally pending
 
 - Editorial assignment of one primary and one secondary CTA per article.
 - Newsletter provider configuration, placement and live signup testing.
-- GA account-side reporting checks and the saved-consent issue above.
+- GA account-side reporting checks.

@@ -79,9 +79,10 @@
 	const STORAGE_KEY = 'cookie-consent';
 	const banner = document.getElementById('cookie-consent');
 
-	function storedChoice(): string | null {
+	function storedChoice(): 'granted' | 'denied' | null {
 		try {
-			return localStorage.getItem(STORAGE_KEY);
+			const value = localStorage.getItem(STORAGE_KEY);
+			return value === 'granted' || value === 'denied' ? value : null;
 		} catch {
 			return null;
 		}

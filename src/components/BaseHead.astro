@@ -49,17 +49,20 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID as string | undefined;
 />
 <meta name="generator" content={Astro.generator} />
 
-<!-- Google Consent Mode v2: denied by default, before any GA code loads.
-     The consent banner (CookieConsent.astro) pushes the 'consent' 'update'
-     when the visitor makes a choice. -->
+<!-- Set consent synchronously before the Google tag loads. A prior opt-in
+     must apply to the page-view sent by gtag('config') on every page. -->
 <script is:inline>
 	(function () {
 		window.dataLayer = window.dataLayer || [];
 		function gtag() {
 			window.dataLayer.push(arguments);
 		}
+		var analyticsConsent = 'denied';
+		try {
+			if (localStorage.getItem('cookie-consent') === 'granted') analyticsConsent = 'granted';
+		} catch (e) {}
 		gtag('consent', 'default', {
-			analytics_storage: 'denied',
+			analytics_storage: analyticsConsent,
 			ad_storage: 'denied',
 			ad_user_data: 'denied',
 			ad_personalization: 'denied',
